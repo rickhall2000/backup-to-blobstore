@@ -12,11 +12,11 @@
             .createCloudBlobClient
             (.getContainerReference container-name))]
     (.createIfNotExist ctr)
-    {:upload (fn [:keys [file target]]
+    {:upload (fn [{:keys [file target]}]
                (let [blob-ref (.getBlockBlobReference ctr target)]
                  (.upload blob-ref (FileInputStream. file) (.length file))))
 
-     :download (fn [:keys [blob target]]
+     :download (fn [{:keys [blob target]}]
                  (.download blob (FileOutputStream. target)))
 
      :find-blob (fn [blobname]
@@ -28,10 +28,34 @@
      :remove-container (fn []
                          (.delete ctr))
 
-     :blob-seq (fn ([] (:blob-seq ctr))
-                 ([dir]
-                    (tree-seq
-                     (fn [f] (complement (instance CloudBlob f)))
-                     (fn [f] (.listBlobs f))
-                     dir)))
+     :blob-seq (fn []
+                 (filter #(instance? CloudBlockBlob %)
+                  (tree-seq
+                   (fn [f] (not (instance? CloudBlockBlob f)))
+                   (fn [f] (.listBlobs f))
+                   ctr)))
+
+     :list-blobs (fn []
+                   (filter
+                    #(instance? CloudBlockBlob %)
+                    (.listBlobs ctr)))
+
+     :ctr ctr
+
+     :delete-container (fn []
+                         (.delete ctr))
+
+
      }))
+
+
+
+   (comment
+       :all-blobs (fn []
+                    (loop [work-list (.listBlobs ctr) acc []]
+                      (cond
+                       (empty? work-list) acc
+                       (instance? CloudBlockBlob (first work-list))
+                       (recur (rest workList) (conj acc (first work-list)))
+                       (:all-blobs ctr))
+                      )))
