@@ -1,9 +1,8 @@
 (ns filer.core
+  (:gen-class)
   (:require [filer.config :as config]
             [filer.blobstore :as store]
-            [filer.filestore :as files])
-  (:import  [java.io File FileInputStream FileOutputStream])
-  )
+            [filer.filestore :as files]))
 
 (def container (store/container config/conn-str "mycontainer"))
 
@@ -22,5 +21,8 @@
   (doseq [f (files/all-files folder)]
     (upload-file f container)))
 
-(defn -main [args]
-  (backup-folder config/root-folder container))
+(defn -main [& args]
+  (cond
+   (= "delete" (first args)) (delete-blobs container)
+   :default
+   (backup-folder config/root-folder container)))
