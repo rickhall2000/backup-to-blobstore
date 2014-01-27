@@ -17,7 +17,11 @@
                  (.upload blob-ref (FileInputStream. file) (.length file))))
 
      :download (fn [{:keys [blob target]}]
-                 (.download blob (FileOutputStream. target)))
+                 (do
+                   (.mkdirs (.getParentFile (File. target)))
+                   (with-open [w (FileOutputStream. target)]
+                   (.download blob w))))
+
 
      :find-blob (fn [blobname]
                   (.getBlockBlobReference ctr blobname))

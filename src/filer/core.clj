@@ -21,8 +21,23 @@
   (doseq [f (files/all-files folder)]
     (upload-file f container)))
 
+(defn get-destination [blob]
+  (files/ms-name
+   (str config/restore-folder "/" (.getName blob))))
+
+(defn download-settings [blob]
+  {:blob blob
+   :target (get-destination blob)})
+
+(defn restore-folder [folder container]
+  (doseq [f ((:blob-seq container))]
+    ((:download container) (download-settings f))))
+
 (defn -main [& args]
   (cond
-   (= "delete" (first args)) (delete-blobs container)
+   (= "delete" (first args))
+     (delete-blobs container)
+   (= "restore" (first args))
+    (restore-folder config/restore-folder container)
    :default
-   (backup-folder config/root-folder container)))
+     (backup-folder config/root-folder container)))
