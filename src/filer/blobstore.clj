@@ -44,22 +44,8 @@
                     #(instance? CloudBlockBlob %)
                     (.listBlobs ctr)))
 
-     :ctr ctr
-
      :delete-container (fn []
                          (.delete ctr))
 
 
      }))
-
-
-
-   (comment
-       :all-blobs (fn []
-                    (loop [work-list (.listBlobs ctr) acc []]
-                      (cond
-                       (empty? work-list) acc
-                       (instance? CloudBlockBlob (first work-list))
-                       (recur (rest workList) (conj acc (first work-list)))
-                       (:all-blobs ctr))
-                      )))

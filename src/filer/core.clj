@@ -4,7 +4,9 @@
             [filer.blobstore :as store]
             [filer.filestore :as files]))
 
-(def container (store/container config/conn-str "mycontainer"))
+(def container
+  (store/container config/conn-str
+                   (config/container-name config/root-folder)))
 
 (defn upload-settings [f]
   {:file f
@@ -14,8 +16,7 @@
   ((:upload container) (upload-settings file)))
 
 (defn delete-blobs [ctr]
-  (doseq [f ((ctr :blob-seq))]
-    ((:delete ctr) f)))
+  ((:delete-container ctr)))
 
 (defn backup-folder [folder container]
   (doseq [f (files/all-files folder)]
@@ -36,8 +37,8 @@
 (defn -main [& args]
   (cond
    (= "delete" (first args))
-     (delete-blobs container)
+     (delete-blobs (store/container config/conn-str (second args)))
    (= "restore" (first args))
-    (restore-folder config/restore-folder container)
+    (restore-folder config/restore-folder (store/container config/conn-str (second args)))
    :default
      (backup-folder config/root-folder container)))
