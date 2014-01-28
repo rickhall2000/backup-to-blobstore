@@ -4,9 +4,9 @@
             [filer.blobstore :as store]
             [filer.filestore :as files]))
 
-(def container
+(defn make-container [root-folder]
   (store/container config/conn-str
-                   (config/container-name config/root-folder)))
+    (config/container-name root-folder)))
 
 (defn upload-settings [f]
   {:file f
@@ -41,4 +41,5 @@
    (= "restore" (first args))
     (restore-folder config/restore-folder (store/container config/conn-str (second args)))
    :default
-     (backup-folder config/root-folder container)))
+     (doseq [p config/back-folders]
+       (backup-folder p (make-container p)))))
