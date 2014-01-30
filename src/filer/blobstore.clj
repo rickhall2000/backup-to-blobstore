@@ -14,7 +14,8 @@
     (.createIfNotExist ctr)
     {:upload (fn [{:keys [file target]}]
                (let [blob-ref (.getBlockBlobReference ctr target)]
-                 (.upload blob-ref (FileInputStream. file) (.length file))))
+                 (with-open [r (FileInputStream. file)]
+                   (.upload blob-ref r (.length file)))))
 
      :download (fn [{:keys [blob target]}]
                  (do
