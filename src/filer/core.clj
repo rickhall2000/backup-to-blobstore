@@ -22,17 +22,17 @@
 (defn delete-blobs [ctr]
   ((:delete-container ctr)))
 
-(defn get-destination [blob]
+(defn get-destination [blob folder]
   (files/ms-name
-   (str config/restore-folder "/" (.getName blob))))
+   (str folder "/" (.getName blob))))
 
-(defn download-settings [blob]
+(defn download-settings [blob folder]
   {:blob blob
-   :target (get-destination blob)})
+   :target (get-destination blob folder)})
 
 (defn restore-folder [folder container]
   (doseq [f ((:blob-seq container))]
-    ((:download container) (download-settings f))))
+    ((:download container) (download-settings f folder))))
 
 (defn -main [& args]
   (cond
