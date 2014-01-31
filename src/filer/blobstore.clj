@@ -46,7 +46,4 @@
                     (.listBlobs ctr)))
 
      :delete-container (fn []
-                         (.delete ctr))
-
-
-     }))
+                         (.delete ctr))}))

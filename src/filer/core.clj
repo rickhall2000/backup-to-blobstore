@@ -8,19 +8,19 @@
   (store/container config/conn-str
     (config/container-name root-folder)))
 
-(defn upload-settings [f]
+(defn upload-settings [f root-folder]
   {:file f
-   :target (subs (.toString f) (inc (count config/root-folder)))})
+   :target (subs (.toString f) (inc (count root-folder)))})
 
-(defn upload-file [file container]
-  ((:upload container) (upload-settings file)))
-
-(defn delete-blobs [ctr]
-  ((:delete-container ctr)))
+(defn upload-file [file container root-folder]
+  ((:upload container) (upload-settings file root-folder)))
 
 (defn backup-folder [folder container]
   (doseq [f (files/all-files folder)]
-    (upload-file f container)))
+    (upload-file f container folder)))
+
+(defn delete-blobs [ctr]
+  ((:delete-container ctr)))
 
 (defn get-destination [blob]
   (files/ms-name
