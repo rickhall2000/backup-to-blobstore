@@ -22,6 +22,8 @@
 (defn delete-blobs [ctr]
   ((:delete-container ctr)))
 
+(fn [x] x)
+
 (defn get-destination [blob folder]
   (files/ms-name
    (str folder "/" (.getName blob))))
